@@ -11,53 +11,32 @@ import (
 	"testing"
 )
 
-func TestMaps_Len(t *testing.T) {
-	ConfirmLen := func(m map[int]bool, l int) {
-		if r := Len(m); r != l {
-			t.Errorf("Len(%v) should be %v not %v", m, l, r)
-		}
-	}
-	ConfirmLen(nil, 0)
-	ConfirmLen(map[int]bool{}, 0)
-	ConfirmLen(map[int]bool{0: true}, 1)
-	ConfirmLen(map[int]bool{0: true, 1: false}, 2)
-	ConfirmLen(map[int]bool{0: true, 1: false, 2: true}, 3)
-}
-
-func TestMaps_Get(t *testing.T) {
-	ConfirmGet := func(m map[int]bool, k int, v bool) {
-		switch r, ok := Get(m, k); {
-		case !ok:
-			t.Errorf("Get(%v, %v) did not find a value", m, k)
-		case r != v:
-			t.Errorf("Get(%v, %v) should be %v not %v", m, k, v, r)
+func TestMaps_Equal(t *testing.T) {
+	ConfirmEqual := func(e1, e2 map[int]bool) {
+		switch {
+		case !Equal(e1, e2):
+			t.Errorf("Equal(%v, %v) should succeed", e1, e2)
+		case !Equal(e2, e1):
+			t.Errorf("Equal(%v, %v) should succeed", e2, e1)
 		}
 	}
 
-	ConfirmGet(map[int]bool{0: true, 1: false, 2: true}, 0, true)
-	ConfirmGet(map[int]bool{0: true, 1: false, 2: true}, 1, false)
-	ConfirmGet(map[int]bool{0: true, 1: false, 2: true}, 2, true)
-}
+	ConfirmEqual(map[int]bool{}, map[int]bool{})
+	ConfirmEqual(map[int]bool{0: true}, map[int]bool{0: true})
 
-func TestMaps_Set(t *testing.T) {
-	ConfirmSet := func(m map[int]bool, k int, v bool) {
-		Set(m, k, v)
-		switch r, ok := Get(m, k); {
-		case !ok:
-			t.Errorf("Set(%v, %v) did not set a value", m, k)
-		case r != v:
-			t.Errorf("Set(%v, %v) should store %v not %v", m, k, v, r)
+	RefuteEqual := func(e1, e2 map[int]bool) {
+		switch {
+		case Equal(e1, e2):
+			t.Errorf("Equal(%v, %v) should fail", e1, e2)
+		case Equal(e2, e1):
+			t.Errorf("Equal(%v, %v) should fail", e2, e1)
 		}
 	}
 
-	ConfirmSet(map[int]bool{}, 0, true)
-	ConfirmSet(map[int]bool{}, 0, false)
-	ConfirmSet(map[int]bool{}, 1, true)
-	ConfirmSet(map[int]bool{}, 1, false)
-	ConfirmSet(map[int]bool{0: true}, 0, false)
-	ConfirmSet(map[int]bool{0: false}, 0, true)
-	ConfirmSet(map[int]bool{1: true}, 1, false)
-	ConfirmSet(map[int]bool{1: false}, 1, true)
+	RefuteEqual(map[int]bool{}, map[int]bool{0: true})
+	RefuteEqual(map[int]bool{0: true}, map[int]bool{1: true})
+	RefuteEqual(map[int]bool{0: false}, map[int]bool{1: false})
+	RefuteEqual(map[int]bool{0: true}, map[int]bool{1: false})
 }
 
 func TestMaps_Keys(t *testing.T) {
